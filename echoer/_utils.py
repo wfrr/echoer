@@ -1,7 +1,8 @@
-from json import JSONDecodeError
+import json
 from xml.etree.ElementTree import Element, QName, SubElement, fromstring, tostring
 
-from flask import Request
+from flask import current_app, g
+from jsonschema import validate
 
 from echoer.config import Config
 
@@ -203,7 +204,7 @@ def make_wsdl() -> bytes:
 
 
 def parse_soap_echo_request(xml_data: bytes) -> str:
-    """Extract echo request data.
+    """Extract XML echo request data.
 
     <?xml version="1.0" encoding="UTF-8"?>
     <soap:Envelope
@@ -253,9 +254,7 @@ def make_response_body(response: str) -> str:
 
     """
     qname = QName(Config.SOAP_ENVELOPE, "Envelope").text
-    envelope = Element(
-        qname, {"soap": Config.SOAP_ENVELOPE, "tns": Config.SOAP_TNS}
-    )
+    envelope = Element(qname, {"soap": Config.SOAP_ENVELOPE, "tns": Config.SOAP_TNS})
 
     body_el = SubElement(envelope, QName(Config.SOAP_ENVELOPE, "Body").text)
     resp_el = SubElement(body_el, QName(Config.SOAP_TNS, "EchoResponse").text)
@@ -268,7 +267,7 @@ def make_fault_response_body(code: str, message: str) -> str:
     """Create failt response body.
 
     <?xml version='1.0' encoding='UTF-8'?>
-    <ns0:Envelope xmlns:ns0="http://schemas.xmlsoap.org/soap/envelope/" 
+    <ns0:Envelope xmlns:ns0="http://schemas.xmlsoap.org/soap/envelope/"
      xmlns:ns1="http://127.0.0.1:5000/echo/soap"
      soap="http://schemas.xmlsoap.org/soap/envelope/">
     <ns0:Body>
@@ -296,3 +295,77 @@ def make_fault_response_body(code: str, message: str) -> str:
     SubElement(fault, "faultstring").text = message
 
     return tostring(envelope, xml_declaration=True, encoding="UTF-8")
+
+
+_json_rpc_schema = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["jsonrpc", "method", "params", "id"],
+    "additionalProperties": False,
+    "properties": {
+        "jsonrpc": {"type": "string", "const": "2.0"},
+        "method": {"type": "string", "minLength": 1},
+        "params": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {"type": "string"},
+                                {"type": "number"},
+                                {"type": "boolean"},
+                                {"type": "null"},
+                                {"type": "object"},
+                                {"type": "array"},
+                            ]
+                        },
+                    },
+                    {
+                        "type": "object",
+                        "additionalProperties": {
+                            "anyOf": [
+                                {"type": "string"},
+                                {"type": "number"},
+                                {"type": "boolean"},
+                                {"type": "null"},
+                                {"type": "object"},
+                                {"type": "array"},
+                            ]
+                        },
+                    },
+                    {
+                        "anyOf": [
+                            {"type": "string"},
+                            {"type": "number"},
+                            {"type": "boolean"},
+                            {"type": "null"},
+                        ]
+                    },
+                ]
+            },
+        },
+        "id": {"anyOf": [{"type": "integer"}, {"type": "string"}, {"type": "null"}]},
+    },
+}
+
+
+def parse_rpc_echo_request(rbody: bytes) -> dict:
+    """Extract JSON echo request data.
+
+    :param rbody: request body
+    :type rbody: bytes
+    :return: dict representation of JSON
+    :rtype: dict
+    """
+    req_body = rbody.decode("UTF-8")
+    current_app.logger.debug(f"JSON request load successful, request_id={g.request_id}")
+    req_body = json.loads(req_body)
+    current_app.logger.debug(f"JSON request parse successful, request_id={g.request_id}")
+    validate(instance=req_body, schema=_json_rpc_schema)
+    current_app.logger.debug(
+        f"JSON request validation successful, request_id={g.request_id}"
+    )
+    return req_body

@@ -6,7 +6,7 @@ load_dotenv()
 class Config:
     HOST = os.getenv('HOST', "0.0.0.0")
     PORT = os.getenv('PORT', "5080")
-    DEBUG = os.getenv('DEBUG', "False")
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
     SERVICE_ADDRESS = f"http://{HOST}:{PORT}"
 
     SOAP_WSDL = "http://schemas.xmlsoap.org/wsdl/"
