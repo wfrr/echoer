@@ -1,5 +1,5 @@
 import json
-from xml.etree.ElementTree import Element, QName, SubElement, fromstring, tostring
+from xml.etree.ElementTree import Element, ParseError, QName, SubElement, fromstring, tostring
 
 from flask import current_app, g
 from jsonschema import validate
@@ -203,7 +203,7 @@ def make_wsdl() -> bytes:
     return tostring(definitions, encoding="utf-8")
 
 
-def parse_soap_echo_request(xml_data: bytes) -> str:
+def parse_soap_echo_request(xml_data: bytes) -> str | None:
     """Extract XML echo request data.
 
     <?xml version="1.0" encoding="UTF-8"?>
@@ -236,10 +236,11 @@ def parse_soap_echo_request(xml_data: bytes) -> str:
     if req_el is None:
         raise ValueError("Missing request element")
 
+    # It's okay to have empty request text
     return req_el.text or ""
 
 
-def make_response_body(response: str) -> str:
+def make_response_body(response: str) -> bytes:
     """Create response body.
 
     <?xml version='1.0' encoding='UTF-8'?>
@@ -307,7 +308,7 @@ _json_rpc_schema = {
         "method": {"type": "string", "minLength": 1},
         "params": {
             "type": "array",
-            "minItems": 1,
+            "minItems": 0,
             "items": {
                 "anyOf": [
                     {

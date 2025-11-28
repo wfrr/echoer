@@ -1,6 +1,7 @@
 import json
 import time
 import uuid
+from xml.etree.ElementTree import ParseError
 
 from flask import Blueprint, Response, abort, current_app, g, render_template, request
 from jsonschema import ValidationError
@@ -55,9 +56,15 @@ def rest() -> Response:
     :return: response object
     :rtype: Response
     """
-    body = echo(request, op_res=request.data.decode("utf-8"))
-    current_app.logger.debug(f"Echo operation for request_id={g.request_id} executed")
-    return Response(response=json.dumps(body), content_type="application/json")
+    try:
+        body = echo(request, op_res=request.data.decode("utf-8"))
+        current_app.logger.debug(f"Echo operation for request_id={g.request_id} executed")
+        return Response(response=json.dumps(body), content_type="application/json")
+    except UnicodeDecodeError:
+        current_app.logger.info(f"Non unicode characters in reqeuest for request_id={g.request_id}")
+        resp_body = {"error": "Request must be valid Unicode"}
+        return Response(response=json.dumps(resp_body), status=500, content_type="application/json")
+
 
 
 @bp.route("/rest/<param>", methods=("GET", "POST", "PUT", "PATCH", "DELETE"))
@@ -69,9 +76,14 @@ def rest_param(param: str) -> Response:
     :return: response object
     :rtype: Response
     """
-    body = echo(request, param, op_res=request.data.decode("utf-8"))
-    current_app.logger.debug(f"Echo operation for request_id={g.request_id} executed")
-    return Response(response=json.dumps(body), content_type="application/json")
+    try:
+        body = echo(request, param, op_res=request.data.decode("utf-8"))
+        current_app.logger.debug(f"Echo operation for request_id={g.request_id} executed")
+        return Response(response=json.dumps(body), content_type="application/json")
+    except UnicodeDecodeError:
+        current_app.logger.info(f"Non unicode characters in reqeuest for request_id={g.request_id}")
+        resp_body = {"error": "Request must be valid Unicode"}
+        return Response(response=json.dumps(resp_body), status=500, content_type="application/json")
 
 
 @bp.get("/soap")
@@ -94,6 +106,11 @@ def echo_soap() -> Response:
         current_app.logger.debug(
             f"SOAP request data extracted for request_id={g.request_id}"
         )
+    except ParseError:
+        current_app.logger.error(f"Malformed request data for request_id={g.request_id}")
+        fault_response = make_fault_response_body("Client", "Malformed request data")
+        current_app.logger.debug(f"Fault response for request_id={g.request_id} created")
+        return Response(fault_response, status=500, content_type="application/xml")
     except ValueError as ve:
         current_app.logger.error(
             f"Error extracting request data for request_id={g.request_id}: {ve} "
@@ -151,7 +168,7 @@ def rpc_endpoint() -> Response:
             f"Function '{req_body['''method''']}' execution successful, request_id={g.request_id}"
         )
         resp_body = {"jsonrpc": "2.0", "result": resp_msg, "id": req_body["id"]}
-    except (json.JSONDecodeError, ValidationError):
+    except (json.JSONDecodeError, ValidationError, UnicodeDecodeError):
         current_app.logger.debug(
             f"JSON request structure error, request_id={g.request_id}"
         )

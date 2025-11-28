@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>API — Доступные запросы</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.6;background:#f7f8fa;color:#0f1724;padding:28px}
+    .wrap{max-width:980px;margin:28px auto;background:#fff;border:1px solid #e6e9ee;border-radius:10px;padding:28px;box-shadow:0 8px 24px rgba(2,6,23,0.06)}
+    h1{margin:0 0 6px;font-size:22px}
+    p.lead{margin:0 0 20px;color:#334155}
+    .endpoint{border:1px solid #e6eef8;padding:14px;border-radius:10px;margin-bottom:16px;background:#fbfdff}
+    .ep-head{display:flex;align-items:center;justify-content:space-between}
+    .path{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f1f5f9;padding:6px 10px;border-radius:6px}
+    .methods{margin-left:12px}
+    .method{display:inline-block;padding:6px 8px;border-radius:6px;color:#fff;font-weight:700;font-size:12px;margin-right:6px}
+    .GET{background:#10b981} .POST{background:#2563eb} .PUT{background:#f59e0b} .PATCH{background:#7c3aed} .DELETE{background:#ef4444}
+    .desc{color:#475569;margin:10px 0}
+    pre{background:#0b1220;color:#dbeafe;padding:12px;border-radius:8px;font-size:13px;overflow:auto;margin:10px 0}
+    .note{font-size:13px;color:#6b7280;margin-top:6px}
+    a.btn{display:inline-block;padding:8px 12px;background:#0f1724;color:#fff;border-radius:8px;text-decoration:none}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    footer{margin-top:18px;color:#64748b;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <h1>Доступные API-запросы</h1>
+    <p class="lead">Ниже перечислены доступные конечные точки и примеры отправки запросов через curl.</p>
+
+    <!-- /echo/rest -->
+    <div class="endpoint" id="ep-rest" aria-labelledby="rest-title">
+      <div class="ep-head">
+        <div class="row">
+          <div class="path">/echo/rest</div>
+          <div class="methods">
+            <span class="method GET">GET</span>
+            <span class="method POST">POST</span>
+            <span class="method PUT">PUT</span>
+            <span class="method PATCH">PATCH</span>
+            <span class="method DELETE">DELETE</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 id="rest-title" style="margin:12px 0 6px">Описание</h3>
+      <p class="desc">REST-эндпоинт, эхо-сервис. Возвращает информацию о запросе: адрес и порт клиента, данные запроса, результат выполнения операции.</p>
+
+      <h4 style="margin:8px 0 6px">Примеры curl</h4>
+
+      <strong>GET</strong>
+      <pre>curl -i http://localhost:5000/echo/rest</pre>
+
+      <strong>POST</strong>
+      <pre>curl -i -X POST http://localhost:5000/echo/rest \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'username=admin&password=admin'</pre>
+
+      <strong>PUT</strong>
+      <pre>curl -i -X PUT http://localhost:5000/echo/rest \
+  -H "Content-Type: application/json" \
+  -d '{"id":123,"value":"updated"}'</pre>
+
+      <strong>PATCH</strong>
+      <pre>curl -i -X PATCH http://localhost:5000/echo/rest \
+  -H "Content-Type: application/json" \
+  -d '{"value":"partial"}'</pre>
+
+      <strong>DELETE</strong>
+      <pre>curl -i -X DELETE "http://localhost:5000/echo/rest/id=123"</pre>
+    </div>
+
+    <!-- /echo/soap -->
+    <div class="endpoint" id="ep-soap" aria-labelledby="soap-title">
+      <div class="ep-head">
+        <div class="row">
+          <div class="path">/echo/soap</div>
+          <div class="methods">
+            <span class="method GET">GET</span>
+            <span class="method POST">POST</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 id="soap-title" style="margin:12px 0 6px">Описание</h3>
+      <p class="desc">SOAP-эндпоинт для приёма XML SOAP-запросов (POST), парсинг происходит по TNS. GET возвращает WSDL.</p>
+
+      <h4 style="margin:8px 0 6px">Примеры curl</h4>
+
+      <strong>GET (WSDL)</strong>
+      <pre>curl -i "http://localhost:5000/echo/soap?wsdl"</pre>
+
+      <strong>POST (SOAP XML)</strong>
+      <pre>curl -i -X POST http://localhost:5000/echo/soap \
+  -H "Content-Type: text/xml; charset=utf-8" \
+  -d '&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;soap:Envelope
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:tns="http://0.0.0.0:5000/echo/soap"&gt;
+  &lt;soap:Body&gt;
+    &lt;tns:Echo&gt;
+      &lt;request&gt;Hello SOAP&lt;/request&gt;
+    &lt;/tns:Echo&gt;
+  &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;'
+
+</pre>
+    </div>
+
+    <!-- /echo/rpc -->
+    <div class="endpoint" id="ep-rpc" aria-labelledby="rpc-title">
+      <div class="ep-head">
+        <div class="row">
+          <div class="path">/echo/rpc</div>
+          <div class="methods">
+            <span class="method POST">POST</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 id="rpc-title" style="margin:12px 0 6px">Описание</h3>
+      <p class="desc">RPC-эндпоинт, ожидает JSON-RPC 2.0 POST-запросы и возвращает эхо-ответ в формате JSON-RPC.</p>
+
+      <h4 style="margin:8px 0 6px">Примеры curl</h4>
+
+      <strong>POST (JSON-RPC)</strong>
+      <pre>curl -i -X POST http://localhost:5000/echo/rpc \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"echo","params":["hello"],"id":1}'</pre>
+    </div>
+
+    <footer>
+      <div class="note">Примечание: замените адрес и порты в примерах на реальные. Для POST/PUT/PATCH убедитесь, что тело запроса и заголовок Content-Type соответствуют реализации сервера.</div>
+    </footer>
+  </div>
+</body>
+</html>
