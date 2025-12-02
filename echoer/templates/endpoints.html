@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>API — Доступные запросы</title>
+  <title>API — available request types</title>
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.6;background:#f7f8fa;color:#0f1724;padding:28px}
     .wrap{max-width:980px;margin:28px auto;background:#fff;border:1px solid #e6e9ee;border-radius:10px;padding:28px;box-shadow:0 8px 24px rgba(2,6,23,0.06)}
@@ -25,8 +25,8 @@
 </head>
 <body>
   <div class="wrap" role="main">
-    <h1>Доступные API-запросы</h1>
-    <p class="lead">Ниже перечислены доступные конечные точки и примеры отправки запросов через curl.</p>
+    <h1>Available API-requests</h1>
+    <p class="lead">Below are the available endpoints and examples of sending requests via curl.</p>
 
     <!-- /echo/rest -->
     <div class="endpoint" id="ep-rest" aria-labelledby="rest-title">
@@ -43,10 +43,10 @@
         </div>
       </div>
 
-      <h3 id="rest-title" style="margin:12px 0 6px">Описание</h3>
-      <p class="desc">REST-эндпоинт, эхо-сервис. Возвращает информацию о запросе: адрес и порт клиента, данные запроса, результат выполнения операции.</p>
+      <h3 id="rest-title" style="margin:12px 0 6px">Description</h3>
+      <p class="desc">REST endpoint. Returns request information about client address and port, request data, and operation result.</p>
 
-      <h4 style="margin:8px 0 6px">Примеры curl</h4>
+      <h4 style="margin:8px 0 6px">curl examples</h4>
 
       <strong>GET</strong>
       <pre>curl -i http://localhost:5000/echo/rest</pre>
@@ -82,10 +82,10 @@
         </div>
       </div>
 
-      <h3 id="soap-title" style="margin:12px 0 6px">Описание</h3>
-      <p class="desc">SOAP-эндпоинт для приёма XML SOAP-запросов (POST), парсинг происходит по TNS. GET возвращает WSDL.</p>
+      <h3 id="soap-title" style="margin:12px 0 6px">Description</h3>
+      <p class="desc">A SOAP endpoint is for receiving XML SOAP requests using POST, parsed via TNS. GET returns WSDL.</p>
 
-      <h4 style="margin:8px 0 6px">Примеры curl</h4>
+      <h4 style="margin:8px 0 6px">curl examples</h4>
 
       <strong>GET (WSDL)</strong>
       <pre>curl -i "http://localhost:5000/echo/soap?wsdl"</pre>
@@ -118,10 +118,10 @@
         </div>
       </div>
 
-      <h3 id="rpc-title" style="margin:12px 0 6px">Описание</h3>
-      <p class="desc">RPC-эндпоинт, ожидает JSON-RPC 2.0 POST-запросы и возвращает эхо-ответ в формате JSON-RPC.</p>
+      <h3 id="rpc-title" style="margin:12px 0 6px">Description</h3>
+      <p class="desc">RPC endpoint, expects JSON-RPC 2.0 POST requests and returns an echo response in JSON-RPC format.</p>
 
-      <h4 style="margin:8px 0 6px">Примеры curl</h4>
+      <h4 style="margin:8px 0 6px">curl examples</h4>
 
       <strong>POST (JSON-RPC)</strong>
       <pre>curl -i -X POST http://localhost:5000/echo/rpc \
@@ -130,7 +130,7 @@
     </div>
 
     <footer>
-      <div class="note">Примечание: замените адрес и порты в примерах на реальные. Для POST/PUT/PATCH убедитесь, что тело запроса и заголовок Content-Type соответствуют реализации сервера.</div>
+      <div class="note">Note: Replace the address and ports in the examples with the actual ones. For POST/PUT/PATCH, ensure that the request body and Content-Type header match the server implementation.</div>
     </footer>
   </div>
 </body>
