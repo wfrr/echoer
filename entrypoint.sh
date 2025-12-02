@@ -1,5 +1,7 @@
-#!/bin/env bash
+#!/bin/env sh
+set -e
 
 export $(grep '^HOST' .env | xargs)
 export $(grep '^PORT' .env | xargs)
-uwsgi --http ${HOST}:${PORT} --master -p 1 -w wsgi:app
+
+exec uwsgi --http ${HOST}:${PORT} --ini uwsgi.ini
