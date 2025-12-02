@@ -1,11 +1,17 @@
 name: Docker Image CI for GHCR
 
 on:
+  workflow_run:
+    workflows: ["Python lint and test"]
+    branches: [master]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
-  build_and_publish:
+  on-success:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps: 
       - uses: actions/checkout@v3
       - name: Build and push the image
