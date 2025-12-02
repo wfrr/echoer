@@ -7,8 +7,6 @@ from echoer.config import Config
 from . import routes
 
 
-# TODO: tests
-# TODO: packaging
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.url_map.strict_slashes = False

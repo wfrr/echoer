@@ -5,7 +5,7 @@ load_dotenv()
 
 class Config:
     HOST = os.getenv('HOST', "0.0.0.0")
-    PORT = os.getenv('PORT', "5080")
+    PORT = os.getenv('PORT', "8080")
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
     SERVICE_ADDRESS = f"http://{HOST}:{PORT}"
 
