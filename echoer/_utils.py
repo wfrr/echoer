@@ -99,7 +99,7 @@ def make_wsdl() -> bytes:
         <wsdl:binding name="echoBinding" type="tns:echoPortType">
             <ns1:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
             <wsdl:operation name="echoRequest">
-                <ns1:operation soapAction="http://addr:port/echo/soap/echo" />
+                <ns1:operation soapAction="http://addr:port/echo/soap" />
                 <wsdl:input>
                     <ns1:body use="literal" />
                 </wsdl:input>
@@ -110,7 +110,7 @@ def make_wsdl() -> bytes:
         </wsdl:binding>
         <wsdl:service name="echoService">
             <wsdl:port name="echoPort" binding="tns:echoBinding">
-                <ns1:address location="http://addr:port/echo/soap/" />
+                <ns1:address location="http://addr:port/echo/soap" />
             </wsdl:port>
         </wsdl:service>
     </wsdl:definitions>
@@ -180,7 +180,7 @@ def make_wsdl() -> bytes:
     _bind_operation(
         binding,
         "Echo",
-        f"{Config.SERVICE_ADDRESS}/echo/soap/echo",
+        f"{Config.SERVICE_ADDRESS}/echo/soap",
     )
 
     # <service>
@@ -197,7 +197,7 @@ def make_wsdl() -> bytes:
     SubElement(
         port,
         _qname("soap", "address"),
-        {"location": f"{Config.SERVICE_ADDRESS}/echo/soap/"},
+        {"location": f"{Config.SERVICE_ADDRESS}/echo/soap"},
     )
 
     return tostring(definitions, encoding="utf-8")
