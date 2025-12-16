@@ -24,8 +24,7 @@ def create_soap_envelope(envelope_ns, tns_ns):
         body = SubElement(envelope, QName(envelope_ns, "Body").text)
 
         if body_content is not None:
-            echo = SubElement(body, QName(tns_ns, "Echo").text)
-            request = SubElement(echo, "request")
+            request = SubElement(body, "EchoRequest")
             if body_content:
                 request.text = body_content
 
@@ -69,9 +68,8 @@ def test_parse_valid_request_with_none_text_returns_empty_string(envelope_ns, tn
         },
     )
     body = SubElement(envelope, QName(envelope_ns, "Body").text)
-    echo = SubElement(body, QName(tns_ns, "Echo").text)
-    _request = SubElement(echo, "request")
-    # _request.text is None by default
+    echo = SubElement(body, "EchoRequest")
+    # echo.text is None by default
 
     xml_data = tostring(envelope, encoding="utf-8", xml_declaration=True)
     result = parse_soap_echo_request(xml_data)
@@ -96,10 +94,8 @@ def test_parse_invalid_xml_raises_parse_error(invalid_xml):
     [
         ("missing_body", "Empty SOAP Body"),
         ("empty_body", "Empty SOAP Body"),
-        ("wrong_operation", "Unknown operation"),
-        ("missing_request", "Missing request element"),
-        ("wrong_namespace", "Unknown operation"),
-        ("wrong_element_name", "Missing request element"),
+        ("missing_request", "Missing EchoRequest element"),
+        ("wrong_element_name", "Missing EchoRequest element"),
     ],
 )
 def test_parse_error_cases_raise_value_error(
@@ -120,19 +116,10 @@ def test_parse_error_cases_raise_value_error(
     elif error_type == "empty_body":
         SubElement(envelope, QName(envelope_ns, "Body").text)
         # Body is empty (no children)
-    elif error_type == "wrong_operation":
-        body = SubElement(envelope, QName(envelope_ns, "Body").text)
-        SubElement(body, QName(tns_ns, "WrongOperation").text)
     elif error_type == "missing_request":
         body = SubElement(envelope, QName(envelope_ns, "Body").text)
         SubElement(body, QName(tns_ns, "Echo").text)
         # No request element
-    elif error_type == "wrong_namespace":
-        wrong_ns = "http://wrong.namespace.com/"
-        body = SubElement(envelope, QName(envelope_ns, "Body").text)
-        echo = SubElement(body, QName(wrong_ns, "Echo").text)
-        request = SubElement(echo, "request")
-        request.text = "test"
     elif error_type == "wrong_element_name":
         body = SubElement(envelope, QName(envelope_ns, "Body").text)
         echo = SubElement(body, QName(tns_ns, "Echo").text)
@@ -144,15 +131,15 @@ def test_parse_error_cases_raise_value_error(
 
 
 @pytest.mark.parametrize(
-    "has_extra_in_body,has_extra_in_echo,has_attributes",
+    "has_extra_in_body,has_attributes",
     [
-        (True, False, False),
-        (False, True, False),
-        (False, False, True),
+        (True, False),
+        (False, False),
+        (False, True),
     ],
 )
 def test_parse_with_extra_elements(
-    envelope_ns, tns_ns, has_extra_in_body, has_extra_in_echo, has_attributes
+    envelope_ns, tns_ns, has_extra_in_body, has_attributes
 ):
     """Test parsing when there are extra elements or attributes."""
     envelope = Element(
@@ -167,15 +154,15 @@ def test_parse_with_extra_elements(
     if has_extra_in_body:
         SubElement(body, QName(tns_ns, "ExtraElement").text)
 
-    echo = SubElement(body, QName(tns_ns, "Echo").text)
+    # echo = SubElement(body, QName(tns_ns, "Echo").text)
 
-    if has_extra_in_echo:
-        SubElement(echo, "extra")
+    # if has_extra_in_echo:
+    #     SubElement(echo, "extra")
 
     if has_attributes:
-        request = SubElement(echo, "request", {"attr": "value"})
+        request = SubElement(body, "EchoRequest", {"attr": "value"})
     else:
-        request = SubElement(echo, "request")
+        request = SubElement(body, "EchoRequest")
     request.text = "test"
 
     xml_data = tostring(envelope, encoding="utf-8", xml_declaration=True)
@@ -193,8 +180,7 @@ def test_parse_with_different_prefixes(envelope_ns, tns_ns):
         },
     )
     body = SubElement(envelope, QName(envelope_ns, "Body").text)
-    echo = SubElement(body, QName(tns_ns, "Echo").text)
-    request = SubElement(echo, "request")
+    request = SubElement(body, "EchoRequest")
     request.text = "test"
 
     xml_data = tostring(envelope, encoding="utf-8", xml_declaration=True)
@@ -228,8 +214,7 @@ def test_parse_without_xml_declaration(envelope_ns, tns_ns):
         },
     )
     body = SubElement(envelope, QName(envelope_ns, "Body").text)
-    echo = SubElement(body, QName(tns_ns, "Echo").text)
-    request = SubElement(echo, "request")
+    request = SubElement(body, "EchoRequest")
     request.text = "test"
 
     xml_data = tostring(envelope, encoding="utf-8", xml_declaration=False)
@@ -238,7 +223,7 @@ def test_parse_without_xml_declaration(envelope_ns, tns_ns):
 
 
 def test_parse_with_nested_request_elements(envelope_ns, tns_ns):
-    """Test that only direct child 'request' element is found."""
+    """Test that only direct child 'EchoRequest' element is found."""
     envelope = Element(
         QName(envelope_ns, "Envelope").text,
         {
@@ -247,11 +232,10 @@ def test_parse_with_nested_request_elements(envelope_ns, tns_ns):
         },
     )
     body = SubElement(envelope, QName(envelope_ns, "Body").text)
-    echo = SubElement(body, QName(tns_ns, "Echo").text)
-    request = SubElement(echo, "request")
+    request = SubElement(body, "EchoRequest")
     request.text = "outer"
     # Nested request (should be ignored by find)
-    nested = SubElement(echo, "nested")
+    nested = SubElement(request, "nested")
     nested_request = SubElement(nested, "request")
     nested_request.text = "inner"
 

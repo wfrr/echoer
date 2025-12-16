@@ -102,9 +102,7 @@ def test_echo_soap_empty_request_text(client, app):
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:tns="{tns}">
     <soap:Body>
-        <tns:Echo>
-            <request></request>
-        </tns:Echo>
+        <EchoRequest></EchoRequest>
     </soap:Body>
 </soap:Envelope>"""
 
@@ -127,9 +125,7 @@ def test_soap_route_unicode_content(client, app):
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:tns="{tns}">
     <soap:Body>
-        <tns:Echo>
-            <request>Hello 世界 🚀</request>
-        </tns:Echo>
+        <EchoRequest>Hello 世界 🚀</EchoRequest>
     </soap:Body>
 </soap:Envelope>"""
 

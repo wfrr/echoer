@@ -14,8 +14,6 @@ def sample_soap_request():
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:tns="{tns}">
     <soap:Body>
-        <tns:Echo>
-            <request>Hello from test</request>
-        </tns:Echo>
+        <EchoRequest>Hello from test</EchoRequest>
     </soap:Body>
 </soap:Envelope>"""

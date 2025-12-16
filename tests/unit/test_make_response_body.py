@@ -57,7 +57,7 @@ def test_make_response_body_has_body(sample_response_root, envelope_ns):
 
 def test_make_response_body_has_echo_response(sample_response_root, tns_ns):
     """Test that response contains EchoResponse element."""
-    echo_response = sample_response_root.find(f".//{{{tns_ns}}}EchoResponse")
+    echo_response = sample_response_root.find(".//EchoResponse")
     assert echo_response is not None
 
 
@@ -77,7 +77,7 @@ def test_make_response_body_preserves_text_content(test_text):
     result = make_response_body(test_text)
     root = fromstring(result.decode("utf-8"))
 
-    response_el = root.find(".//response")
+    response_el = root.find(".//EchoResponse")
     assert response_el is not None
     assert response_el.text == test_text
 
@@ -87,7 +87,7 @@ def test_make_response_body_empty_string():
     result = make_response_body("")
     root = fromstring(result.decode("utf-8"))
 
-    response_el = root.find(".//response")
+    response_el = root.find(".//EchoResponse")
     assert response_el is not None
     # ElementTree converts empty strings to None
     assert response_el.text is None or response_el.text == ""
@@ -98,7 +98,7 @@ def test_make_response_body_none_text():
     result = make_response_body(None)  # type: ignore
     root = fromstring(result.decode("utf-8"))
 
-    response_el = root.find(".//response")
+    response_el = root.find(".//EchoResponse")
     assert response_el is not None
     # ElementTree converts None to None, but the function should handle it
     assert response_el.text is None or response_el.text == ""
@@ -110,11 +110,8 @@ def test_make_response_body_structure(sample_response_root, envelope_ns, tns_ns)
     body = sample_response_root.find(f".//{{{envelope_ns}}}Body")
     assert body is not None
 
-    echo_response = body.find(f".//{{{tns_ns}}}EchoResponse")
+    echo_response = body.find(".//EchoResponse")
     assert echo_response is not None
-
-    response_el = echo_response.find("response")
-    assert response_el is not None
 
 
 def test_make_response_body_xml_declaration(sample_response_xml):
@@ -157,7 +154,7 @@ def test_make_response_body_json_string(json_test_data):
     result = make_response_body(json_str)
     root = fromstring(result.decode("utf-8"))
 
-    response_el = root.find(".//response")
+    response_el = root.find(".//EchoResponse")
     assert response_el is not None
     # Should contain the JSON string
     assert json_str in response_el.text  # type: ignore

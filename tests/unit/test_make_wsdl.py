@@ -94,7 +94,7 @@ def test_make_wsdl_message_parts(wsdl_root, wsdl_ns):
     assert echo_request is not None
     parts = echo_request.findall(f".//{{{wsdl_ns}}}part")
     assert len(parts) == 1
-    assert parts[0].attrib["name"] == "request"
+    assert parts[0].attrib["name"] == "EchoRequest"
     assert parts[0].attrib["type"] == "xsd:string"
 
     # Check EchoResponse message
@@ -102,7 +102,7 @@ def test_make_wsdl_message_parts(wsdl_root, wsdl_ns):
     assert echo_response is not None
     parts = echo_response.findall(f".//{{{wsdl_ns}}}part")
     assert len(parts) == 1
-    assert parts[0].attrib["name"] == "response"
+    assert parts[0].attrib["name"] == "EchoResponse"
     assert parts[0].attrib["type"] == "xsd:string"
 
 

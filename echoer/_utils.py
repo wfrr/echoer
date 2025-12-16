@@ -1,5 +1,5 @@
 import json
-from xml.etree.ElementTree import Element, ParseError, QName, SubElement, fromstring, tostring
+from xml.etree.ElementTree import Element, QName, SubElement, fromstring, tostring
 
 from flask import current_app, g
 from jsonschema import validate
@@ -85,10 +85,10 @@ def make_wsdl() -> bytes:
     <wsdl:definitions targetNamespace="http://addr:port/echo/soap/">
         <wsdl:types />
         <wsdl:message name="echoRequest">
-            <wsdl:part name="request" type="xsd:string" />
+            <wsdl:part name="EchoRequest" type="xsd:string" />
         </wsdl:message>
         <wsdl:message name="echoResponse">
-            <wsdl:part name="echoResponse" type="xsd:string" />
+            <wsdl:part name="EchoResponse" type="xsd:string" />
         </wsdl:message>
         <wsdl:portType name="echoPortType">
             <wsdl:operation name="echoRequest">
@@ -142,12 +142,12 @@ def make_wsdl() -> bytes:
     _add_message(
         definitions,
         "EchoRequest",
-        [("request", "string")],
+        [("EchoRequest", "string")],
     )
     _add_message(
         definitions,
         "EchoResponse",
-        [("response", "string")],
+        [("EchoResponse", "string")],
     )
 
     # <portType>
@@ -211,9 +211,7 @@ def parse_soap_echo_request(xml_data: bytes) -> str | None:
         xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:tns="http://addr:port/echo/soap">
         <soap:Body>
-            <tns:Echo>
-                <request>...</request>
-            </tns:Echo>
+            <EchoRequest>...</EchoRequest>
         </soap:Body>
     </soap:Envelope>
 
@@ -228,16 +226,12 @@ def parse_soap_echo_request(xml_data: bytes) -> str | None:
     if body is None or len(body) == 0:
         raise ValueError("Empty SOAP Body")
 
-    echo_request_el = body.find(f".//{{{Config.SOAP_TNS}}}Echo")
+    echo_request_el = body.find("EchoRequest")
     if echo_request_el is None:
-        raise ValueError("Unknown operation")
-
-    req_el = echo_request_el.find("request")
-    if req_el is None:
-        raise ValueError("Missing request element")
+        raise ValueError("Missing EchoRequest element")
 
     # It's okay to have empty request text
-    return req_el.text or ""
+    return echo_request_el.text or ""
 
 
 def make_response_body(response: str) -> bytes:
@@ -247,9 +241,7 @@ def make_response_body(response: str) -> bytes:
     <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
      xmlns:tns="http://addr:port/echo/soap">
         <soap:Body>
-            <tns:EchoResponse>
-                <response>...</response>
-            </tns:EchoResponse>
+            <EchoResponse>...</EchoResponse>
         </soap:Body>
     </soap:Envelope>
 
@@ -258,8 +250,7 @@ def make_response_body(response: str) -> bytes:
     envelope = Element(qname, {"soap": Config.SOAP_ENVELOPE, "tns": Config.SOAP_TNS})
 
     body_el = SubElement(envelope, QName(Config.SOAP_ENVELOPE, "Body").text)
-    resp_el = SubElement(body_el, QName(Config.SOAP_TNS, "EchoResponse").text)
-    SubElement(resp_el, "response").text = response
+    SubElement(body_el, "EchoResponse").text = response
 
     return tostring(envelope, xml_declaration=True, encoding="UTF-8")
 
