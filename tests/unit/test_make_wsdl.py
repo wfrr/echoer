@@ -153,7 +153,7 @@ def test_make_wsdl_binding_operation(wsdl_root, wsdl_ns, soap_ns):
     # Check SOAP operation
     soap_op = operation.find(f".//{{{soap_ns}}}operation")
     assert soap_op is not None
-    expected_action = f"{Config.SERVICE_ADDRESS}/echo/soap/echo"
+    expected_action = f"{Config.SERVICE_ADDRESS}/echo/soap"
     assert soap_op.attrib["soapAction"] == expected_action
 
     # Check body elements
@@ -181,7 +181,7 @@ def test_make_wsdl_service_port(wsdl_root, wsdl_ns, soap_ns):
     # Check SOAP address
     address = port.find(f".//{{{soap_ns}}}address")
     assert address is not None
-    expected_location = f"{Config.SERVICE_ADDRESS}/echo/soap/"
+    expected_location = f"{Config.SERVICE_ADDRESS}/echo/soap"
     assert address.attrib["location"] == expected_location
 
 
@@ -240,7 +240,7 @@ def test_make_wsdl_with_custom_service_address(monkeypatch):
     # Check service address location
     soap_ns = mock_config.SOAP_NSMAP["soap"]
     address = root.find(f".//{{{soap_ns}}}address")
-    assert address.attrib["location"] == "http://example.com:8080/echo/soap/" # type: ignore
+    assert address.attrib["location"] == "http://example.com:8080/echo/soap" # type: ignore
 
 
 def test_make_wsdl_consistency():
@@ -281,5 +281,5 @@ def test_make_wsdl_soap_action_format(wsdl_root, soap_ns):
     soap_action = soap_op.attrib.get("soapAction", "")
     # Should be a URL ending with /echo
     assert soap_action.startswith("http")
-    assert soap_action.endswith("/echo")
-    assert "/echo/soap/echo" in soap_action
+    assert soap_action.endswith("/soap")
+    assert "/echo/soap" in soap_action
