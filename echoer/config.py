@@ -4,8 +4,8 @@ import os
 load_dotenv()
 
 class Config:
-    HOST = os.getenv('HOST', "0.0.0.0")
-    PORT = os.getenv('PORT', "8080")
+    HOST = os.getenv('SERVICE_HOST', "0.0.0.0")
+    PORT = os.getenv('SERVICE_PORT', "8080")
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
     SERVICE_ADDRESS = f"http://{HOST}:{PORT}"
 

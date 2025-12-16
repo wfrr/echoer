@@ -1,7 +1,7 @@
 #!/bin/env sh
 set -e
 
-export $(grep '^HOST' .env | xargs)
-export $(grep '^PORT' .env | xargs)
+export $(grep '^BIND_HOST' .env | xargs)
+export $(grep '^BIND_PORT' .env | xargs)
 
-exec uwsgi --http ${HOST}:${PORT} --ini uwsgi.ini
+exec uwsgi --http ${BIND_HOST}:${BIND_PORT} --ini uwsgi.ini

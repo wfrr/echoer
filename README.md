@@ -130,8 +130,10 @@ $ curl -X POST http://localhost:5000/echo/rpc \
 ```
 $ git clone https://github.com/wfrr/echoer.git && cd echoer
 $ cat > .env << EOF
-HOST="0.0.0.0"
-PORT=8000
+SERVICE_HOST="0.0.0.0"
+SERVICE_PORT=8000
+BIND_HOST="0.0.0.0"
+BIND_PORT=8000
 EOF
 $ ./run.sh
 ```
@@ -140,8 +142,10 @@ $ ./run.sh
 ```
 $ git clone https://github.com/wfrr/echoer.git && cd echoer
 $ cat > .env << EOF
-HOST="0.0.0.0"
-PORT=8000
+SERVICE_HOST="0.0.0.0"
+SERVICE_PORT=8000
+BIND_HOST="0.0.0.0"
+BIND_PORT=8000
 EOF
 ```
 then either
