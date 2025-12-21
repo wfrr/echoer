@@ -90,7 +90,7 @@ def rest_param(param: str) -> Response:
 def wsdl() -> Response:
     """Serve SOAP requests for WSDL."""
     if "wsdl" in request.args:
-        current_app.logger.info(f"Serving WSDL, request_id={g.request_id}")
+        current_app.logger.debug(f"Serving WSDL, request_id={g.request_id}")
         return Response(
             make_wsdl(),
             mimetype="application/xml",

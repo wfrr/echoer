@@ -55,9 +55,7 @@ $ curl -X POST http://localhost:8000/echo/soap \
     xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:tns="http://0.0.0.0:8000/echo/soap">
   <soap:Body>
-    <tns:Echo>
-      <request>Hello SOAP</request>
-    </tns:Echo>
+    <EchoRequest>Hello SOAP</EchoRequest>
   </soap:Body>
 </soap:Envelope>' | xq
 
@@ -65,7 +63,7 @@ $ curl -X POST http://localhost:8000/echo/soap \
 <ns0:Envelope xmlns:ns0="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://0.0.0.0:8000/echo/soap" soap="http://schemas.xmlsoap.org/soap/envelope/" tns="http://0.0.0.0:8000/echo/soap">
   <ns0:Body>
     <ns1:EchoResponse>
-      <response><![CDATA[{"client": {"host": "172.18.0.1", "port": "45784"}, "request": {"http": {"method": "POST", "path": "/echo/soap", "protocol": "HTTP/1.1"}, "params": "None", "query_param": {}, "headers": [{"Host": "localhost:8000"}, {"User-Agent": "curl/8.17.0"}, {"Accept": "*/*"}, {"Content-Type": "text/xml; charset=utf-8"}, {"Content-Length": "272"}], "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soap:Envelope\n    xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n    xmlns:tns=\"http://0.0.0.0:8000/echo/soap\">\n  <soap:Body>\n    <tns:Echo>\n      <request>Hello SOAP</request>\n    </tns:Echo>\n  </soap:Body>\n</soap:Envelope>"}, "op_result": "Hello SOAP"}]]></response>
+      <response><![CDATA[{"client": {"host": "172.18.0.1", "port": "45784"}, "request": {"http": {"method": "POST", "path": "/echo/soap", "protocol": "HTTP/1.1"}, "params": "None", "query_param": {}, "headers": [{"Host": "localhost:8000"}, {"User-Agent": "curl/8.17.0"}, {"Accept": "*/*"}, {"Content-Type": "text/xml; charset=utf-8"}, {"Content-Length": "272"}], "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soap:Envelope\n    xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n    xmlns:tns=\"http://0.0.0.0:8000/echo/soap\">\n  <soap:Body>\n    <EchoRequest>Hello SOAP</EchoRequest>\n  </soap:Body>\n</soap:Envelope>"}, "op_result": "Hello SOAP"}]]></response>
     </ns1:EchoResponse>
   </ns0:Body>
 </ns0:Envelope>
