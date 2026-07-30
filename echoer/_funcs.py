@@ -33,5 +33,5 @@ def echo(req: Request, req_param: str | None = None, op_res: str | None = None) 
             "headers": [{h: req.headers[h]} for h in req.headers.keys()],
             "body": body,
         },
-        "op_result": op_res
+        "op_result": op_res,
     }

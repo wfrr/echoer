@@ -1,6 +1,7 @@
 .venv/
 .env
 .vscode/
+.zed
 
 *.pyc
 __pycache__/

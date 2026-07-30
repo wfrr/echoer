@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask, jsonify, redirect
+from logstash_async.handler import AsynchronousLogstashHandler, LogstashFormatter
 
 from echoer.config import Config
 
@@ -14,8 +15,25 @@ def create_app():
 
     for handler in app.logger.handlers:
         app.logger.removeHandler(handler)
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s"))
+
+    log_format = "[%(asctime)s] %(levelname)s: %(message)s"
+
+    match Config.LOG_TARGET:
+        case "STDOUT":
+            handler = logging.StreamHandler()
+            handler.setFormatter(logging.Formatter(log_format))
+        case "LOGSTASH":
+            handler = AsynchronousLogstashHandler(
+                host=Config.LOGSTASH_HOST,
+                port=Config.LOGSTASH_PORT,
+                transport="logstash_async.transport.BeatsTransport",
+                database_path="",
+                ssl_verify=False,
+            )
+            handler.setFormatter(LogstashFormatter(log_format))
+        case _:
+            raise AssertionError("Invalid LOG_TARGET")
+
     app.logger.addHandler(handler)
     app.logger.setLevel(Config.LOG_LEVEL)
 
