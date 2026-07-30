@@ -16,12 +16,12 @@ def create_app():
     for handler in app.logger.handlers:
         app.logger.removeHandler(handler)
 
-    log_format = "[%(asctime)s] %(levelname)s: %(message)s"
-
     match Config.LOG_TARGET:
         case "STDOUT":
             handler = logging.StreamHandler()
-            handler.setFormatter(logging.Formatter(log_format))
+            handler.setFormatter(
+                logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+            )
         case "LOGSTASH":
             handler = AsynchronousLogstashHandler(
                 host=Config.LOGSTASH_HOST,
@@ -30,7 +30,7 @@ def create_app():
                 database_path="",
                 ssl_verify=False,
             )
-            handler.setFormatter(LogstashFormatter(log_format))
+            handler.setFormatter(LogstashFormatter())
         case _:
             raise AssertionError("Invalid LOG_TARGET")
 
